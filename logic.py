@@ -12,17 +12,15 @@ from sqlalchemy.exc import OperationalError # type: ignore
 from model import Room, Base
 #from settings import REVERSE
 from utils import Queue, Stack, bf_paths, df_paths
-
 engine = create_engine('sqlite:///map-1030-wednesday.db')
 Session = sessionmaker()
 
-sess = Session(bind=engine)
+def make_graph() -> Dict[int, Dict[str, int]]:
 
-all = sess.query(Room).all()
-
-if __name__=='__main__':
-    # Dict[int, Dict[str, int]]
+    sess = Session(bind=engine)
+    all = sess.query(Room).all()
     graph = dict()
+
     for room in all:
         graph[room.room_id] = dict()
         if room.n_to:
@@ -34,5 +32,12 @@ if __name__=='__main__':
         if room.e_to:
             graph[room.room_id]['e'] = room.e_to
 
+    return graph
+
+if __name__=='__main__':
+    # Dict[int, Dict[str, int]]
+    graph = make_graph()
 
     print(bf_paths(graph, 216))
+    print()
+    print(bf_paths(graph, 499))
